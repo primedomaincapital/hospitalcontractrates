@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Sitemap: https://hospitalcontractrates.com/sitemap.xml
+
+
+
