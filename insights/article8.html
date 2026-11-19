@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hospital Price Transparency Data: How to Read the Machine-Readable Files — hospitalcontractrates.com Insights</title>
+<meta name="description" content="Hospital price transparency machine-readable files: the JSON and CSV formats, the negotiated-rate fields, the 2026 percentile data, and the traps that mislead first-time readers.">
+<meta property="og:title" content="Hospital Price Transparency Data: How to Read the Machine-Readable Files">
+<meta property="og:description" content="Hospital price transparency machine-readable files: the JSON and CSV formats, the negotiated-rate fields, the 2026 percentile data, and the traps that mislead first-time readers.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://hospitalcontractrates.com/insights/article8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,500&family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#ffffff;--ink:#0c222b;--teal:#0e5e6b;--teal-deep:#083f47;--teal-ink:#0a3038;
+  --accent:#d9622b;--accent-dark:#b84e20;--muted:#5d6f76;--line:#e2e9eb;--wash:#f4f7f8;
+  --serif:'Newsreader',Georgia,serif;--sans:'Public Sans',-apple-system,'Segoe UI',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);color:var(--ink);background:var(--paper);line-height:1.8;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.2;letter-spacing:-0.01em}
+.wrap{max-width:1160px;margin:0 auto;padding:0 32px}
+.article-wrap{max-width:760px;margin:0 auto;padding:0 32px}
+nav{position:fixed;top:0;left:0;right:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav-inner{max-width:1160px;margin:0 auto;padding:0 32px;height:68px;display:flex;align-items:center;justify-content:space-between}
+.brand{font-family:var(--serif);font-weight:700;font-size:1.15rem;color:var(--ink);text-decoration:none}
+.brand span{color:var(--teal)}
+.nav-links{display:flex;gap:30px;align-items:center}
+.nav-links a{color:var(--ink);text-decoration:none;font-size:.86rem;font-weight:500}
+.nav-links a:hover{color:var(--teal)}
+.btn{display:inline-block;background:var(--accent);color:#fff;font-weight:600;font-size:.9rem;letter-spacing:.03em;text-decoration:none;padding:14px 30px;border-radius:3px;transition:background .2s}
+.btn:hover{background:var(--accent-dark)}
+.btn.small{padding:10px 22px;font-size:.82rem}
+@media(max-width:760px){.nav-links a:not(.btn){display:none}}
+.article-hero{margin-top:68px;background:var(--teal-ink);color:#fff;padding:96px 0 72px}
+.article-hero .tag{display:inline-block;font-size:.74rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#ffb380;margin-bottom:22px}
+.article-hero h1{font-size:clamp(2.2rem,4.6vw,3.6rem);color:#fff;max-width:20ch;margin-bottom:20px}
+.article-hero .standfirst{font-size:1.12rem;color:rgba(255,255,255,.8);font-weight:300;max-width:60ch}
+.byline{margin-top:30px;font-size:.84rem;color:rgba(255,255,255,.6);letter-spacing:.04em}
+.article-body{padding:80px 0}
+.article-body p{margin-bottom:1.7em;font-size:1.06rem;color:#33454c}
+.article-body p:first-of-type::first-letter{font-family:var(--serif);font-size:3.4em;float:left;line-height:.85;margin:6px 10px 0 0;color:var(--teal);font-weight:600}
+.article-body h2{font-size:1.7rem;margin:2.4em 0 .8em;color:var(--ink)}
+.article-body em{color:var(--ink)}
+.pullquote{font-family:var(--serif);font-size:1.55rem;line-height:1.45;color:var(--teal-deep);border-left:4px solid var(--accent);padding:8px 0 8px 28px;margin:2.4em 0;font-style:italic}
+.article-fig{margin:2.6em 0}
+.article-fig img{width:100%;border-radius:4px;display:block}
+.article-fig figcaption{font-size:.84rem;color:#8a9aa0;margin-top:10px}
+.article-cta{background:var(--wash);border:1px solid var(--line);border-radius:4px;padding:56px 48px;text-align:center;margin:72px 0}
+.article-cta h2{font-size:2rem;margin-bottom:14px}
+.article-cta p{color:var(--muted);max-width:52ch;margin:0 auto 30px}
+.article-cta .price{font-family:var(--serif);font-size:2.4rem;font-weight:700;margin-bottom:28px}
+.back-link{display:inline-block;margin-top:8px;font-size:.9rem;color:var(--teal);text-decoration:none;font-weight:600}
+.more{background:var(--wash);padding:90px 0}
+.more h2{font-size:2rem;margin-bottom:36px}
+.more-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.more-card{background:#fff;border:1px solid var(--line);border-radius:4px;padding:34px 32px;text-decoration:none;color:inherit;display:block}
+.more-card .tag{font-size:.72rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-bottom:10px}
+.more-card h3{font-size:1.3rem;margin-bottom:10px}
+.more-card p{font-size:.92rem;color:var(--muted)}
+@media(max-width:760px){.more-grid{grid-template-columns:1fr}}
+footer{background:var(--teal-ink);color:rgba(255,255,255,.65);padding:56px 0}
+.foot-inner{max-width:1160px;margin:0 auto;padding:0 32px;display:flex;justify-content:space-between;gap:32px;flex-wrap:wrap}
+footer a{color:#fff;text-decoration:none}
+footer .fine{font-size:.8rem;margin-top:26px;color:rgba(255,255,255,.4)}
+</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Hospital Price Transparency Data: How to Read the Machine-Readable Files", "description": "Hospital price transparency machine-readable files: the JSON and CSV formats, the negotiated-rate fields, the 2026 percentile data, and the traps that mislead first-time readers.", "author": {"@type": "Organization", "name": "Prime Domain Capital"}, "publisher": {"@type": "Organization", "name": "Prime Domain Capital"}, "datePublished": "2026-11-19", "mainEntityOfPage": "https://hospitalcontractrates.com/insights/article8"}</script>
+<link rel="canonical" href="https://hospitalcontractrates.com/insights/article8">
+</head>
+<body>
+<nav>
+  <div class="nav-inner">
+    <a class="brand" href="../index.html">hospital<span>contractrates</span>.com</a>
+    <div class="nav-links">
+      <a href="../index.html#insights">Insights</a>
+      <a class="btn small" href="https://www.afternic.com/domain/hospitalcontractrates.com">Buy Now — $9,888</a>
+    </div>
+  </div>
+</nav>
+
+<header class="article-hero">
+  <div class="article-wrap">
+    <span class="tag">Price transparency</span>
+    <h1>Hospital Price Transparency Data: How to Read the Machine-Readable Files</h1>
+    <p class="standfirst">The file is public, the format is standard, and the numbers still mislead the unwary. Here is how to read one without fooling yourself.</p>
+    <div class="byline">Prime Domain Capital Research · November 2026</div>
+  </div>
+</header>
+
+<article class="article-body">
+  <div class="article-wrap">
+<p>On January 1, 2026, every hospital in America took on a new obligation: a senior officer had to put a name to the hospital's price file, attesting that the information in it was true, accurate, and complete. The Centers for Medicare &amp; Medicaid Services had been requiring hospitals to publish machine-readable files of their standard charges since January 2021. Five years in, the files were public, voluminous, and — for anyone who actually tried to use one — treacherous. The 2026 rule did not just demand better files. It demanded a signature on them. This article is a field guide to reading what that signature covers.</p>
+<p>The first thing to understand is what the file is for. It is not a price list for patients. It is a structured disclosure, built for software, of every standard charge a hospital sets for every item and service it provides. Used correctly, it answers a precise question: what did this hospital agree to accept from this payer, for this service, in dollars? Used carelessly, it answers a different question and convinces the reader it answered the first.</p>
+<h2>Where the file lives</h2>
+<p>Every hospital must post its machine-readable file on a public website, free of charge, with no account, no password, and no personal information required. Since January 1, 2024, the hospital's site must also maintain a .txt file in its root folder pointing to the file's location, and a footer link labeled “Price Transparency” leading to the same place. That is the front door. If a hospital's homepage has no such footer link, that is itself a finding — and it is one of the deficiencies the Centers for Medicare &amp; Medicaid Services has been citing in its enforcement letters. Between April and early June 2026, 519 hospitals received noncompliance letters, according to Forvis Mazars, and the agency has issued 27 civil monetary penalties to date.</p>
+<p>Start there, and check the date before anything else. The file carries a version date, and hospitals are required to update it at least annually. A file dated eighteen months ago is not a price file. It is an archive. The advocacy group Patient Rights Advocate, which audits the files, found 49.4 percent of 2,000 hospitals fully compliant in September 2026 — its highest reading yet, and still a way of saying half of American hospitals were not.</p>
+<h2>The three formats</h2>
+<p>Since July 1, 2024, hospitals must publish the file in one of three CMS template formats. The JSON schema presents the data hierarchically and produces the smallest files; it is the format to choose if you plan to work with the data in code. CSV Tall uses fewer columns and more rows — one row per charge — and is the most common format hospitals actually publish. CSV Wide uses more columns and fewer rows, with each payer-plan combination as its own column set. CMS publishes a data dictionary, now at version 3.0, that defines every field and valid value for the CSV formats, along with the JSON schema, on its hospital price transparency GitHub repository.</p>
+<p>The practical rule: if you are going to filter and join, take the JSON. If you are going to eyeball a single service across payers, take the CSV Tall file and filter it in a spreadsheet. Do not open a large file in a text editor and scroll. Some hospital files run to hundreds of megabytes and millions of rows, and the payer-side files under the separate Transparency in Coverage rules are larger still — UnitedHealthcare warns its own files may reach 1 terabyte. The hospital files are smaller than the payer files, but the discipline is the same: use tools built for the size, and never confuse the two regimes. The schema version 2.0 that took effect for payer files in February 2026 governs health plans, not hospitals. Applying payer-file rules to a hospital file is one of the commonest errors in this work.</p>
+<h2>The fields that matter</h2>
+<p>Every file carries five standard charges for each item or service. The gross charge is the hospital's list price — the chargemaster number, and the least informative figure in the file. The payer-specific negotiated charge is the rate the hospital negotiated with a named payer and plan, and it is the figure most readers are actually looking for. The de-identified minimum and maximum negotiated charges are the lowest and highest negotiated rates across all payers, with the payer names stripped out. The discounted cash price is what the hospital will accept from a patient paying cash. If you remember one distinction from this article, make it this one: the gross charge is not a price anybody pays. The negotiated charge is.</p>
+<p>Each charge is tied to the service by code — a CPT code, a DRG, a HCPCS code, or the hospital's own internal code — and to the setting, inpatient or outpatient. The payer-specific charge must be clearly associated with the payer and plan name, and the file must state the method used to establish the charge: a dollar amount, a percentage, or an algorithm. Since January 1, 2026, the file must also list the hospital's Type 2 organizational National Provider Identifiers, so a reader can confirm which legal entity's prices they are looking at — a detail that matters inside health systems where a dozen hospitals share a brand and a website.</p>
+<h2>The 2026 percentile fields</h2>
+<p>The most important change in the 2026 rule concerns the charges that cannot be expressed as a dollar amount. Since 2021, hospitals could report a negotiated rate as a percentage or formula — “120 percent of Medicare,” say — which told a reader nothing about the dollars. The February 25, 2025 executive order demanded actual prices, not estimates, and the 2026 rule delivers the mechanism: wherever a negotiated price is a percentage or formula, the hospital must now also publish the median and the 10th and 90th percentile of what that insurer actually paid, drawn from remittance data over a window of no less than 12 and no longer than 15 months, along with the count of allowed amounts behind the calculation. The old estimated-allowed-amount field is gone.</p>
+<p>Read those three numbers as a distribution, not a price. The median is what the payer typically paid. The 10th and 90th percentiles show the spread — and the spread is often the story, since the same contracted percentage can produce wildly different dollars against different base rates and service mixes. A narrow spread means the rate is stable. A wide one means the headline rate is a fiction and the percentiles are the truth. The attestation that accompanies the file — the senior officer's statement that the information is true, accurate, and complete — applies to these figures as much as to the rest, which is why the 2026 rule pairs the data with a name.</p>
+<h2>The traps</h2>
+<p>Five traps catch nearly every first-time reader. The first is the gross charge: it is the biggest number in the file and the least meaningful, yet it is the number that ends up in headlines. The second is the de-identified minimum and maximum. They describe the range across all payers, not the range for your payer, and they cannot be used to infer what any specific insurer pays. The third is the percentage rate without its percentile companions — a file that reports “120 percent of Medicare” with no median, no percentiles, and no remittance count is either pre-2026 or noncompliant, and either way it cannot be used.</p>
+<p>The fourth trap is staleness. A file is a snapshot, and hospital contracts renew, renegotiate, and reprice through the year. A negotiated rate from a file posted fourteen months ago may describe a contract that no longer exists. Check the file's date, check the allowed-amount window behind the percentiles, and treat anything older than a year as history, not intelligence. The fifth trap is the code. The same clinical service can appear under different codes in different files, and a hospital's internal code will not match its neighbor's. A comparison built on mismatched codes is a comparison of different things, and it will produce confident, wrong conclusions.</p>
+<p>There is a sixth trap, and it is the most expensive: mistaking the hospital file for the purchase price. The machine-readable file discloses what the hospital charges. It does not disclose what the hospital paid its vendors for the device, the drug, or the implant used in the service. That number — the contract rate this site is named for — remains private. The file tells you what the hospital sells a procedure for. It will not tell you what the procedure cost the hospital to deliver.</p>
+<h2>The counterargument: the files were built for machines, not people</h2>
+<p>Transparency's skeptics have a fair point, and the Government Accountability Office has made it in its own way: patients rarely use these files. Five years into mandatory disclosure, negotiated prices have not converged, patients rarely shop for hospital care, and the files — even improved — remain hard for ordinary people to use. The value accrues mostly to employers, analysts, and rival hospitals, not to the patient choosing where to get surgery. The compliance burden falls hardest on small and rural hospitals, which lack the contracting teams to produce clean files. A rule that fines a 25-bed hospital for a bad spreadsheet while a large system absorbs the same fine as a rounding error is not obviously a rule that makes care cheaper.</p>
+<p>But that critique concedes the files' real audience. The 2026 rule's percentile data was not designed for a patient comparing hospitals on a phone. It was designed for the employer buying care for 40,000 workers, the analyst building a benchmark, and the rival hospital checking its own rates against the market. Turquoise Health, which turns these files into searchable negotiated-rate data, raised a $40 million Series C in March 2026 and counts 10 of the top 25 health systems among its users. The files are infrastructure, not consumer information — and infrastructure is judged by whether the people who build on it can trust it, not by whether everyone reads it.</p>
+<h2>What this means for anyone using the data</h2>
+<p>The working method is short enough to fit on an index card. Find the file through the footer link or the root .txt file, and check its date. Confirm the format — JSON for analysis, CSV Tall for inspection — and validate it against the CMS schema or data dictionary before trusting a single number. Filter to the service by code, not by description, and to the payer and plan by name. Read the payer-specific negotiated charge in dollars; where the rate is a percentage, read the median and the 10th and 90th percentiles and the remittance count behind them. Ignore the gross charge. Note the de-identified minimum and maximum only as a range check. And record the file's date alongside every figure you take from it, because a price without a date is a rumor.</p>
+<p>Used that way, the files do something no dataset in American healthcare did before 2021: they put the negotiated rate in public, in dollars, with a named officer attesting to it. The data is imperfect, half the hospitals still do not comply fully, and the purchase prices behind the charges remain hidden. But the direction is set. The hospital that files a clean, current, percentile-complete file is telling the market it can defend its prices. The hospital that does not is telling the market something else — and now, for the first time, the market can read it.</p>
+<p><em>The definitive source for hospital contract rate intelligence is still up for grabs. HospitalContractRates.com is available for acquisition by the company that will own this category — inquiries to info@primedomaincapital.com.</em></p>
+<h2>Sources</h2>
+<ul>
+<li><a href="https://www.law.cornell.edu/cfr/text/45/180.50">45 CFR 180.50 — Requirements for making public hospital standard charges</a> — Cornell Law Institute, eCFR</li>
+<li><a href="https://raw.githubusercontent.com/CMSgov/hospital-price-transparency/master/documentation/CSV/README.md">Hospital Price Transparency CSV Data Dictionary v3.0</a> — CMS, GitHub</li>
+<li><a href="https://turquoise.health/resources/blog/final-rule-deep-dive-tracking-changes-that-impact-hospital-price-transparency">Final rule deep dive: tracking changes that impact hospital price transparency</a> — Turquoise Health</li>
+<li><a href="https://www.cms.gov/healthplan-price-transparency/resources/technical-clarification">Technical Clarification Questions and Answers</a> — CMS — schema v2.0 applies to payer Transparency in Coverage files</li>
+<li><a href="https://techfundingnews.com/turquoise-health-40m-series-c-healthcare-pricing-contracts/">With $40M from a16z and Oak, Turquoise wants to build the OS for healthcare pricing chaos</a> — Tech Funding News, March 2026</li>
+</ul>
+
+<div class="article-cta">
+      <h2>hospitalcontractrates.com</h2>
+      <p>An exact-match domain for the transparency benchmark of hospital purchasing. Secure it through Afternic.</p>
+      <div class="price">$9,888</div>
+      <a class="btn" href="https://www.afternic.com/domain/hospitalcontractrates.com">Buy Now on Afternic</a><br>
+      <a class="back-link" href="../index.html#insights">← Back to Insights</a>
+    </div>
+  </div>
+</article>
+
+<section class="more">
+  <div class="wrap">
+    <h2>More from Insights</h2>
+    <div class="more-grid">
+      <a class="more-card" href="article7.html">
+        <div class="tag">Procurement</div>
+        <h3>How Long Does Hospital Procurement Take From RFP to Signed Contract?</h3>
+        <p>Three to nine months is the honest answer for a hospital RFP — and twelve to twenty-four for a new GPO contract. The delay is rarely the paperwork.</p>
+      </a>
+      <a class="more-card" href="article6.html">
+        <div class="tag">Device pricing</div>
+        <h3>What Do Hospitals Actually Pay for Common Medical Devices?</h3>
+        <p>Hospital purchase prices for implants and surgical supplies vary as much as 2.1-to-1 between hospitals — and the transparency files do not disclose them.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-inner">
+    <div>
+      <div style="font-family:var(--serif);font-size:1.2rem;font-weight:700;color:#fff;margin-bottom:8px">hospitalcontractrates.com</div>
+      <div style="font-size:.9rem">Offered by Prime Domain Capital · <a href="mailto:info@primedomaincapital.com">info@primedomaincapital.com</a></div>
+    </div>
+    <div style="font-size:.9rem;text-align:right">
+      <a href="https://www.afternic.com/domain/hospitalcontractrates.com">Buy Now — $9,888</a>
+    </div>
+  </div>
+  <div class="wrap fine">© 2026 Prime Domain Capital. This domain is offered for sale as a digital asset. Pricing and availability subject to change.</div>
+</footer>
+
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "1407571ec8bc45c3a082c91096558135"}'></script>
+</body>
+</html>
